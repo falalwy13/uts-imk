@@ -361,3 +361,5 @@ if st.checkbox("Tampilkan Semua Hasil yang Tersimpan"):
             st.info("Tidak ada data untuk dihitung ulang skornya.")
     else:
         st.info("Belum ada data hasil tes yang tersimpan.")
+st.markdown("---")
+st.markdown("<p style='text-align: center; color: grey;'>Dibuat oleh Muhammad Naufal Alwy</p>", unsafe_allow_html=True)
