@@ -3,10 +3,8 @@ import pandas as pd
 from database import buat_tabel, simpan_data, ambil_semua_data
 import json
 
-# Pastikan tabel database sudah ada
 buat_tabel()
 
-# Muat data pertanyaan dari CSV.
 try:
     data_pertanyaan = pd.read_csv("pertanyaan_16pf_lengkap.csv")
     if 'faktor' not in data_pertanyaan.columns or 'arah_skor' not in data_pertanyaan.columns:
@@ -21,71 +19,68 @@ except Exception as e:
 
 opsi_jawaban = ['a. Ya', 'b. Kadang-kadang', 'c. Tidak']
 
-# =========================================================================
-# DESKRIPSI SINGKAT UNTUK SETIAP FAKTOR 16 PF
-# =========================================================================
 deskripsi_faktor = {
-    'A': { # Warmth / Kehangatan
+    'A': {
         'low': "A- : Pribadi yang menyendiri, kaku, kritis, dingin.",
         'high': "A+ : Pribadi yang ramah, hangat, mudah bergaul, perhatian."
     },
-    'B': { # Reasoning / Penalaran (Kecerdasan)
+    'B': {
         'low': "B- : Kurang cerdas, berpikir konkrit, belajar lambat.",
         'high': "B+ : Cerdas, berpikir abstrak, cepat belajar."
     },
-    'C': { # Emotional Stability / Stabilitas Emosi
+    'C': {
         'low': "C- : Cenderung emosional, mudah terganggu, kurang matang.",
         'high': "C+ : Stabil secara emosi, tenang, matang, realistis."
     },
-    'E': { # Dominance / Dominansi
+    'E': {
         'low': "E- : Patuh, rendah hati, akomodatif, mudah dikendalikan.",
         'high': "E+ : Dominan, asertif, keras kepala, kompetitif."
     },
-    'F': { # Liveliness / Kegairahan
+    'F': {
         'low': "F- : Serius, pendiam, berhati-hati, pesimis.",
         'high': "F+ : Gembira, antusias, spontan, ceria."
     },
-    'G': { # Rule-Consciousness / Kesadaran Aturan (Superego Strength)
+    'G': {
         'low': "G- : Tidak patuh aturan, suka berubah, oportunistik.",
         'high': "G+ : Penuh kesadaran aturan, teliti, bertanggung jawab."
     },
-    'H': { # Social Boldness / Keberanian Sosial
+    'H': {
         'low': "H- : Pemalu, hati-hati, mudah terancam, sensitif.",
         'high': "H+ : Berani secara sosial, suka bertualang, tebal muka."
     },
-    'I': { # Sensitivity / Sensitivitas
+    'I': {
         'low': "I- : Keras, realistik, mandiri, kurang peka.",
         'high': "I+ : Sensitif, artistik, imajinatif, lembut hati."
     },
-    'L': { # Vigilance / Kewaspadaan
+    'L': {
         'low': "L- : Percaya, mudah menerima, tidak curiga.",
         'high': "L+ : Curiga, skeptis, sulit mempercayai orang lain."
     },
-    'M': { # Abstractedness / Keterasingan (Imajinasi)
+    'M': {
         'low': "M- : Praktis, berorientasi realitas, konvensional.",
         'high': "M+ : Imajinatif, abstrak, berorientasi ide, kurang praktis."
     },
-    'N': { # Privateness / Kerahasiaan (Kecerdikan)
+    'N': {
         'low': "N- : Terus terang, polos, apa adanya.",
         'high': "N+ : Cerdik, taktis, hati-hati, pandai menahan diri."
     },
-    'O': { # Apprehension / Kecemasan (Kecenderungan Khawatir)
+    'O': {
         'low': "O- : Percaya diri, puas diri, tenang.",
         'high': "O+ : Cemas, khawatir, mudah menyalahkan diri sendiri."
     },
-    'Q1': { # Openness to Change / Keterbukaan Terhadap Perubahan
+    'Q1': {
         'low': "Q1- : Konservatif, tradisional, menerima yang sudah ada.",
         'high': "Q1+ : Eksperimental, liberal, terbuka terhadap perubahan."
     },
-    'Q2': { # Self-Reliance / Kemandirian
+    'Q2': {
         'low': "Q2- : Bergantung pada kelompok, mengikuti, suka berkelompok.",
         'high': "Q2+ : Mandiri, mandiri, tidak suka bergantung."
     },
-    'Q3': { # Perfectionism / Perfeksionisme (Self-Discipline)
+    'Q3': {
         'low': "Q3- : Tidak disiplin, ceroboh, konflik internal.",
         'high': "Q3+ : Terkendali, disiplin, perfeksionis, teliti."
     },
-    'Q4': { # Tension / Ketegangan
+    'Q4': {
         'low': "Q4- : Tenang, santai, sabar, tidak frustasi.",
         'high': "Q4+ : Tegang, gelisah, frustasi, tidak sabar."
     }
@@ -98,9 +93,6 @@ st.subheader("Silakan Isi Identitas Anda")
 nama_pengguna = st.text_input("Nama Lengkap", key="nama_input")
 usia_pengguna = st.number_input("Usia", min_value=10, max_value=100, step=1, key="usia_input")
 
-# =========================================================================
-# FUNGSI SKORING 16 PF (ASUMSI SEDERHANA)
-# =========================================================================
 def hitung_skor_16pf(daftar_jawaban_bersih, data_pertanyaan_df):
     skor_faktor = {
         'A': 0, 'B': 0, 'C': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0,
@@ -111,9 +103,6 @@ def hitung_skor_16pf(daftar_jawaban_bersih, data_pertanyaan_df):
 
     nilai_jawaban = {'a': 2, 'b': 1, 'c': 0}
 
-    # Penting: Pastikan data_pertanyaan_df dan daftar_jawaban_bersih memiliki urutan yang sama
-    # Atau lebih baik, pass jawaban sebagai dictionary {question_id: answer_char}
-    # Untuk saat ini, kita asumsikan urutannya sama
     if len(daftar_jawaban_bersih) != len(data_pertanyaan_df):
         st.error(f"Kesalahan skoring: Jumlah jawaban ({len(daftar_jawaban_bersih)}) tidak sesuai dengan jumlah pertanyaan ({len(data_pertanyaan_df)}).")
         return None, None 
@@ -148,33 +137,26 @@ def hitung_skor_16pf(daftar_jawaban_bersih, data_pertanyaan_df):
 
     return skor_faktor, ambang_batas_per_faktor
 
-# =========================================================================
-# LOGIKA PENGATURAN HALAMAN SOAL
-# =========================================================================
-PERTANYAAN_PER_HALAMAN = 10 # Anda bisa mengubah ini
+PERTANYAAN_PER_HALAMAN = 10 
 total_pertanyaan = len(data_pertanyaan)
 total_halaman = (total_pertanyaan + PERTANYAAN_PER_HALAMAN - 1) // PERTANYAAN_PER_HALAMAN
 
-# Inisialisasi session_state
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 0
 if 'answers' not in st.session_state:
-    st.session_state.answers = [''] * total_pertanyaan # Inisialisasi daftar jawaban kosong
+    st.session_state.answers = [''] * total_pertanyaan 
 
-# Fungsi untuk berpindah halaman
 def go_to_page(page_num):
     st.session_state.current_page = page_num
 
 if nama_pengguna and usia_pengguna:
     st.subheader("Jawab Semua Pertanyaan:")
 
-    # Tentukan pertanyaan untuk halaman saat ini
     start_idx = st.session_state.current_page * PERTANYAAN_PER_HALAMAN
     end_idx = min(start_idx + PERTANYAAN_PER_HALAMAN, total_pertanyaan)
     
     pertanyaan_di_halaman_ini = data_pertanyaan.iloc[start_idx:end_idx]
 
-    # Tampilkan navigasi halaman di atas
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
         if st.session_state.current_page > 0:
@@ -187,30 +169,24 @@ if nama_pengguna and usia_pengguna:
 
     st.markdown("---")
 
-    # Tampilkan pertanyaan
     for i, baris in pertanyaan_di_halaman_ini.iterrows():
-        # Gunakan i (indeks global) untuk penomoran soal dan menyimpan jawaban
         nomor_soal = i + 1
-        current_answer = st.session_state.answers[i] if st.session_state.answers[i] else '' # Ambil jawaban tersimpan
+        current_answer = st.session_state.answers[i] if st.session_state.answers[i] else '' 
 
-        # Menampilkan soal dengan nomor dan style
         st.markdown(f"**{nomor_soal}.** {baris['pertanyaan']}")
         
-        # Opsi radio button. Gunakan index global (i) sebagai key unik dan simpan jawaban
-        # Temukan indeks opsi yang saat ini terpilih untuk default value radio
         default_index = opsi_jawaban.index(current_answer) if current_answer in opsi_jawaban else 0 
         
         selected_option = st.radio(
-            "", # Label kosong agar pertanyaan muncul di atas radio button
+            "", 
             opsi_jawaban,
             index=default_index,
-            key=f"q_{baris['id']}_{st.session_state.current_page}" # Key unik untuk setiap radio button per halaman
+            key=f"q_{baris['id']}_{st.session_state.current_page}" 
         )
-        st.session_state.answers[i] = selected_option # Simpan jawaban terpilih
+        st.session_state.answers[i] = selected_option 
 
     st.markdown("---")
     
-    # Tampilkan navigasi halaman di bawah juga
     col_b1, col_b2, col_b3 = st.columns([1, 2, 1])
     with col_b1:
         if st.session_state.current_page > 0:
@@ -221,12 +197,9 @@ if nama_pengguna and usia_pengguna:
         if st.session_state.current_page < total_halaman - 1:
             st.button("Halaman Selanjutnya", on_click=go_to_page, args=(st.session_state.current_page + 1,), key="next_page_bottom")
 
-    # Tombol kirim hanya muncul di halaman terakhir
     if st.session_state.current_page == total_halaman - 1:
         if st.button("Kirim Jawaban dan Lihat Hasil"):
-            # Validasi apakah semua jawaban sudah terisi
-            # Membersihkan jawaban sebelum skoring
-            jawaban_bersih = [jwb.split('.')[0] for jwb in st.session_state.answers if jwb] # Filter yang kosong
+            jawaban_bersih = [jwb.split('.')[0] for jwb in st.session_state.answers if jwb] 
 
             if len(jawaban_bersih) != total_pertanyaan:
                 st.error(f"Harap lengkapi semua {total_pertanyaan} pertanyaan sebelum mengirim. Anda baru menjawab {len(jawaban_bersih)}.")
@@ -283,13 +256,8 @@ if nama_pengguna and usia_pengguna:
                     st.info("Catatan Penting: Interpretasi skor ini membutuhkan standar normatif dan keahlian psikologi. Skor ini hanyalah total poin berdasarkan asumsi sederhana.")
                 else:
                     st.error("Gagal menghitung skor atau ambang batas. Mohon periksa konsistensi data.")
-        # else: # Ini komentar jika ingin tombol kirim selalu muncul walau belum semua dijawab
-        #     st.warning("Pastikan semua pertanyaan terjawab sebelum mengirim.")
 
 
-# =========================================================================
-# BAGIAN MENAMPILKAN DATA HASIL TES
-# =========================================================================
 st.subheader("📊 Data Hasil Tes")
 if st.checkbox("Tampilkan Semua Hasil yang Tersimpan"):
     semua_data = ambil_semua_data()
@@ -362,6 +330,5 @@ if st.checkbox("Tampilkan Semua Hasil yang Tersimpan"):
     else:
         st.info("Belum ada data hasil tes yang tersimpan.")
 
-# Add the attribution at the very bottom
 st.markdown("---")
 st.markdown("<p style='text-align: center; color: grey;'>Dibuat oleh Muhammad Naufal Alwy</p>", unsafe_allow_html=True)
